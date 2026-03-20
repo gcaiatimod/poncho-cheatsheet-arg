@@ -5,11 +5,18 @@ const searchInput = document.getElementById('searchInput');
 const sourceCheckboxes = document.querySelectorAll('#sourceFilters input');
 
 function generateHTMLForClass(cls, category) {
-    if (category === 'Íconos ARG') return `<div style="text-align:center"><i class="${cls}" style="font-size: 2rem; color: #0072bb;"></i><br><br><small>.${cls}</small></div>`;
-    if (category === 'Botones') return `<button type="button" class="btn ${cls}">Botón ${cls}</button>`;
+    if (category === 'Íconos ARG') {
+        return `<div class="p-2 text-center"><i class="${cls}" style="font-size: 2.5rem; color:#0072bb"></i><br><br><small>.${cls}</small></div>`;
+    }
+    if (category === 'Botones') return `<button class="btn ${cls}">Botón ${cls}</button>`;
     if (category === 'Alertas') return `<div class="alert ${cls}" style="width:100%">Alerta: ${cls}</div>`;
+    if (category === 'Navegación') {
+        return `<nav class="navbar ${cls}" style="margin:0; width:100%"><div class="container-fluid"><div class="navbar-header"><a class="navbar-brand" href="#">${cls}</a></div></div></nav>`;
+    }
+    if (category === 'Paneles') return `<div class="panel ${cls}" style="width:100%"><div class="panel-heading">Panel</div><div class="panel-body">Cuerpo</div></div>`;
     if (category === 'Insignias/Etiquetas') return `<span class="${cls}">${cls}</span>`;
-    return `<div class="${cls}" style="padding: 10px; border: 1px dashed #ccc; display: inline-block;">.${cls}</div>`;
+    
+    return `<div class="${cls}" style="padding:10px; border: 1px dashed #ccc; border-radius:4px">.${cls}</div>`;
 }
 
 function drawSourceBadges(sources) {
@@ -52,9 +59,9 @@ function render() {
             card.innerHTML = `
                 <div class="card-header" onclick="navigator.clipboard.writeText('${item.name}')">
                     <span>.${item.name}</span>
-                    <div>${drawSourceBadges(item.sources)}</div>
+                    <div style="display:flex">${drawSourceBadges(item.sources)}</div>
                 </div>
-                <div class="card-body">${generateHTMLForClass(item.name, catName)}</div>
+                <div class="card-body" style="padding:${catName === 'Navegación' ? '0' : '15px'}">${generateHTMLForClass(item.name, catName)}</div>
             `;
             grid.appendChild(card);
         });
