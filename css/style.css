@@ -1,29 +1,22 @@
 
-body { font-family: 'Encode Sans', sans-serif, Arial; background-color: #f8f9fa; margin: 0; padding: 0; }
+body { font-family: sans-serif; background: #f4f6f9; margin:0; }
 .cheatsheet-container { display: flex; height: 100vh; overflow: hidden; }
-.sidebar { width: 330px; background: #fff; border-right: 1px solid #e0e0e0; display: flex; flex-direction: column; }
-.sidebar-header { padding: 20px; border-bottom: 1px solid #e0e0e0; background: #0072bb; color: white;}
-.sidebar-header h2 { margin: 0; font-size: 1.2rem; font-weight: bold; }
-.filters-container { padding: 15px; border-bottom: 1px solid #e0e0e0; background: #f9f9f9; }
-.source-filters { display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap; }
-.source-filters label { cursor: pointer; font-size: 0.9rem; display: flex; align-items: center; gap: 5px; background: white; padding: 6px 10px; border-radius: 4px; border: 1px solid #dee2e6; transition: background 0.2s; }
-.source-filters label:hover { background: #f0f8ff; }
-.search-box { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
-.category-list { overflow-y: auto; flex: 1; padding: 0; margin: 0; list-style: none; }
-.category-item { padding: 10px 20px; border-bottom: 1px solid #f0f0f0; cursor: pointer; transition: background 0.2s; display: flex; justify-content: space-between; align-items: center;}
+.sidebar { width: 320px; background: #fff; border-right: 1px solid #ddd; display: flex; flex-direction: column; }
+.sidebar-header { padding: 20px; background: #0072bb; color: white; }
+.filters-container { padding: 15px; background: #f9f9f9; border-bottom: 1px solid #ddd; }
+.source-filters { display: flex; gap: 10px; margin-bottom:10px; flex-wrap: wrap; }
+.search-box { width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
+.category-list { overflow-y: auto; flex: 1; margin: 0; padding: 0; list-style: none; }
+.category-item { padding: 12px 20px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; }
 .category-item:hover { background: #f0f8ff; }
-.category-item.active { background: #0072bb; color: white; }
-.category-item .badge { background: rgba(0,0,0,0.1); padding: 2px 6px; border-radius: 10px; font-size: 0.8rem; }
-.main-content { flex: 1; overflow-y: auto; padding: 20px 40px; background: #f8f9fa; scroll-behavior: smooth; }
-.category-section { margin-bottom: 60px; }
-.category-title { border-bottom: 2px solid #0072bb; padding-bottom: 10px; margin-bottom: 20px; color: #333; }
-.component-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
-.component-card { background: white; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); border: 1px solid #e0e0e0; overflow: hidden; }
-.card-header { padding: 10px 15px; background: #f1f1f1; border-bottom: 1px solid #e0e0e0; font-family: monospace; font-size: 0.9rem; color: #d63384; font-weight: bold; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
-.source-badge { font-family: sans-serif; font-size: 0.65rem; color: white; padding: 2px 5px; border-radius: 4px; font-weight: bold; margin-left: 5px; }
-.badge-bs { background: #563d7c; }
-.badge-po { background: #0072bb; }
-.badge-ic { background: #28a745; }
-.card-body { padding: 15px; flex: 1; display:flex; align-items:center; justify-content:center; }
-.icono-preview { font-size: 2rem; color: #0072bb; }
-.update-badge { margin-top: 10px; font-size: 0.8rem; padding: 5px 8px; border-radius: 4px; display: inline-flex; align-items: center; gap: 5px; background: rgba(255,255,255,0.15); color: #fff; }
+.main-content { flex: 1; overflow-y: auto; padding: 30px; }
+.category-title { border-bottom: 2px solid #0072bb; padding-bottom: 10px; margin-bottom: 20px; }
+.component-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 15px; }
+.component-card { background: white; border-radius: 6px; border: 1px solid #ddd; overflow: hidden; }
+.card-header { padding: 10px; background: #f1f1f1; display: flex; justify-content: space-between; cursor: pointer; font-family: monospace; }
+.card-body { padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 100px; }
+.source-badge { font-size: 0.6rem; padding: 2px 5px; border-radius: 3px; color: white; margin-left: 3px; }
+.source-bootstrap { background: #563d7c; }
+.source-poncho { background: #0072bb; }
+.source-íconos { background: #28a745; }
+.update-badge { font-size: 0.8rem; margin-top: 5px; opacity: 0.8; }
