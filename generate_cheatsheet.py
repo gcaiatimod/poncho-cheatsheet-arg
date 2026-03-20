@@ -5,31 +5,7 @@ import time
 import urllib.request
 from datetime import datetime
 
-def download_css(url, local_path):
-    print(f"Descargando {url}...")
-    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
-    try:
-        req = urllib.request.Request(url, headers=headers)
-        with urllib.request.urlopen(req) as response:
-            content = response.read()
-            with open(local_path, 'wb') as f:
-                f.write(content)
-        return True
-    except Exception as e:
-        print(f"Error descargando {url}: {e}")
-        return False
-
-# URLs oficiales de Poncho (Argentina.gob.ar)
-CSS_MAPPING = {
-    'https://www.argentina.gob.ar/profiles/argentinagobar/themes/contrib/poncho/vendor/bootstrap/css/bootstrap.min.css': 'css/bootstrap.min.css',
-    'https://www.argentina.gob.ar/profiles/argentinagobar/themes/contrib/poncho/css/icono-arg.css': 'css/icono-arg.css',
-    'https://www.argentina.gob.ar/profiles/argentinagobar/themes/contrib/poncho/css/poncho.min.css': 'css/poncho.min.css'
-}
-
-# Descargamos los archivos frescos antes de parsear
-for remote, local in CSS_MAPPING.items():
-    download_css(remote, local)
-
+# --- MODO MANUAL: Usa archivos locales en la carpeta css/ ---
 def parse_css(path_or_url):
     if path_or_url.startswith('http'):
         with urllib.request.urlopen(path_or_url) as response:
@@ -109,7 +85,7 @@ html_template = """<!DOCTYPE html>
                 <h2>Poncho Cheatsheet ARG</h2>
                 <small>Poncho + Bootstrap 3</small>
                 <div class="update-badge" id="updateBadge">
-                    <i class="fa fa-refresh"></i> Actualizado el: {TIMESTAMP_PLACEHOLDER}
+                    <i class="fa fa-calendar"></i> Generado el: {TIMESTAMP_PLACEHOLDER}
                 </div>
             </div>
             <div class="filters-container">
