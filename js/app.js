@@ -165,35 +165,5 @@ render();
 searchInput.addEventListener('input', render);
 sourceCheckboxes.forEach(cb => cb.addEventListener('change', render));
 
-// Petición para verificar actualizaciones
-if (window.location.protocol.startsWith('http')) {
-    fetch('php/check_updates.php')
-        .then(res => {
-            if (!res.ok) throw new Error('PHP no disponible');
-            return res.json();
-        })
-        .then(data => {
-            const badge = document.getElementById('updateBadge');
-            if(badge.querySelector('.dot')) {
-                badge.querySelector('.dot').style.animation = 'none';
-                badge.querySelector('.dot').style.display = 'none';
-            }
-            
-            if (data.up_to_date) {
-                badge.innerHTML = `✓ Actualizado (Servidor: ${data.last_modified})`;
-                badge.classList.add('success');
-            } else {
-                badge.innerHTML = `⚠️ ¡Hay una versión online nueva! (Servidor: ${data.last_modified})`;
-                badge.classList.add('warning');
-            }
-        })
-        .catch(err => {
-            // Si el PHP falla (ej: en GitHub Pages), simplemente ocultamos el badge
-            const badge = document.getElementById('updateBadge');
-            if (badge) badge.style.display = 'none';
-            console.log("Verificación de actualizaciones deshabilitada (Entorno estático o PHP no configurado).");
-        });
-} else {
-    const badge = document.getElementById('updateBadge');
-    if (badge) badge.style.display = 'none';
-}
+// Verificación de actualizaciones deshabilitada (Se gestiona vía GitHub Actions)
+console.log("Poncho Cheatsheet ARG: Listo.");

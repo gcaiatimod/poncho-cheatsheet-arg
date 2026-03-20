@@ -3,6 +3,32 @@ import json
 import os
 import time
 import urllib.request
+from datetime import datetime
+
+def download_css(url, local_path):
+    print(f"Descargando {url}...")
+    headers = {'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'}
+    try:
+        req = urllib.request.Request(url, headers=headers)
+        with urllib.request.urlopen(req) as response:
+            content = response.read()
+            with open(local_path, 'wb') as f:
+                f.write(content)
+        return True
+    except Exception as e:
+        print(f"Error descargando {url}: {e}")
+        return False
+
+# URLs oficiales de Poncho (Argentina.gob.ar)
+CSS_MAPPING = {
+    'https://www.argentina.gob.ar/profiles/argentinagobar/themes/contrib/poncho/vendor/bootstrap/css/bootstrap.min.css': 'css/bootstrap.min.css',
+    'https://www.argentina.gob.ar/profiles/argentinagobar/themes/contrib/poncho/css/icono-arg.css': 'css/icono-arg.css',
+    'https://www.argentina.gob.ar/profiles/argentinagobar/themes/contrib/poncho/css/poncho.min.css': 'css/poncho.min.css'
+}
+
+# Descargamos los archivos frescos antes de parsear
+for remote, local in CSS_MAPPING.items():
+    download_css(remote, local)
 
 def parse_css(path_or_url):
     if path_or_url.startswith('http'):
@@ -82,7 +108,9 @@ html_template = """<!DOCTYPE html>
             <div class="sidebar-header">
                 <h2>Poncho Cheatsheet ARG</h2>
                 <small>Poncho + Bootstrap 3</small>
-                <div class="update-badge" id="updateBadge"><div class="dot"></div> Verificando versiones...</div>
+                <div class="update-badge" id="updateBadge">
+                    <i class="fa fa-refresh"></i> Actualizado el: {TIMESTAMP_PLACEHOLDER}
+                </div>
             </div>
             <div class="filters-container">
                 <div class="source-filters" id="sourceFilters">
@@ -276,38 +304,8 @@ render();
 searchInput.addEventListener('input', render);
 sourceCheckboxes.forEach(cb => cb.addEventListener('change', render));
 
-// Petición para verificar actualizaciones
-if (window.location.protocol.startsWith('http')) {
-    fetch('php/check_updates.php')
-        .then(res => {
-            if (!res.ok) throw new Error('PHP no disponible');
-            return res.json();
-        })
-        .then(data => {
-            const badge = document.getElementById('updateBadge');
-            if(badge.querySelector('.dot')) {
-                badge.querySelector('.dot').style.animation = 'none';
-                badge.querySelector('.dot').style.display = 'none';
-            }
-            
-            if (data.up_to_date) {
-                badge.innerHTML = `✓ Actualizado (Servidor: ${data.last_modified})`;
-                badge.classList.add('success');
-            } else {
-                badge.innerHTML = `⚠️ ¡Hay una versión online nueva! (Servidor: ${data.last_modified})`;
-                badge.classList.add('warning');
-            }
-        })
-        .catch(err => {
-            // Si el PHP falla (ej: en GitHub Pages), simplemente ocultamos el badge
-            const badge = document.getElementById('updateBadge');
-            if (badge) badge.style.display = 'none';
-            console.log("Verificación de actualizaciones deshabilitada (Entorno estático o PHP no configurado).");
-        });
-} else {
-    const badge = document.getElementById('updateBadge');
-    if (badge) badge.style.display = 'none';
-}
+// Verificación de actualizaciones deshabilitada (Se gestiona vía GitHub Actions)
+console.log("Poncho Cheatsheet ARG: Listo.");
 """
 
 css_template = """
@@ -368,8 +366,9 @@ body { font-family: 'Encode Sans', sans-serif, Arial; background-color: #f8f9fa;
 categorized_filtered = {k: v for k, v in categorized.items() if len(v) > 0}
 json_data = json.dumps(categorized_filtered)
 
-timestamp = int(time.time())
-html_content = html_template.replace('js/data.js', f'js/data.js?v={timestamp}').replace('js/app.js', f'js/app.js?v={timestamp}')
+timestamp = datetime.now().strftime("%d/%m/%Y %H:%M")
+html_content = html_template.replace('{TIMESTAMP_PLACEHOLDER}', timestamp)
+html_content = html_content.replace('js/data.js', f'js/data.js?v={int(time.time())}').replace('js/app.js', f'js/app.js?v={int(time.time())}')
 
 with open('js/data.js', 'w', encoding='utf-8') as f:
     f.write('const categorizedData = ' + json_data + ';')
