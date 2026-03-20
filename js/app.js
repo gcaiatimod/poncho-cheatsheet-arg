@@ -9,16 +9,6 @@ function generateHTMLForClass(cls, category) {
     
     if (category === 'Íconos ARG') {
         return `<div style="text-align:center"><i class="${cls} icono-preview"></i><br><br><small style="color: #666;">&lt;i class="${cls}"&gt;&lt;/i&gt;</small></div>`;
-    } else if (category === 'Íconos FA') {
-        const isModifier = /^fa-(lg|[2-5]x|fw|li|ul|border|pull-.*|spin|pulse)$/.test(cls);
-        if (isModifier) {
-            return `<div style="text-align:center; color: #666;">
-                        <div style="margin-bottom:10px;"><i class="fa fa-flag ${cls}"></i></div>
-                        <small>&lt;i class="fa fa-flag ${cls}"&gt;&lt;/i&gt;</small>
-                        <div style="font-size: 0.75rem; margin-top:5px; color:#999;">(Clase de utilidad/tamaño)</div>
-                    </div>`;
-        }
-        return `<div style="text-align:center"><i class="fa ${cls} icono-preview"></i><br><br><small style="color: #666;">&lt;i class="fa ${cls}"&gt;&lt;/i&gt;</small></div>`;
     } else if (category === 'Botones') {
         return `<button type="button" class="btn ${cls}">Botón ${cls}</button>`;
     } else if (category === 'Alertas') {
@@ -45,7 +35,6 @@ function drawSourceBadges(sources) {
         if (s === 'Bootstrap') return '<span class="source-badge badge-bs" title="Viene de Bootstrap">BS3</span>';
         if (s === 'Poncho') return '<span class="source-badge badge-po" title="Viene de Poncho">Poncho</span>';
         if (s === 'Íconos') return '<span class="source-badge badge-ic" title="Viene de Iconos">Íconos</span>';
-        if (s === 'FontAwesome') return '<span class="source-badge badge-fa" title="Viene de FontAwesome">FA</span>';
         return '';
     }).join('');
 }
@@ -62,7 +51,6 @@ function render() {
     let totalCards = 0;
 
     for (const [catName, items] of Object.entries(categorizedData)) {
-        // Filter items based on source and then search text
         const filteredItems = items.filter(item => {
             const sourceMatch = item.sources.some(s => activeSources.includes(s));
             if (!sourceMatch) return false;
@@ -77,11 +65,8 @@ function render() {
         if (filteredItems.length === 0) continue;
         
         totalCards += filteredItems.length;
-
-        // Sort items by name alphabetically
         filteredItems.sort((a,b) => a.name.localeCompare(b.name));
 
-        // Build Sidebar item
         const li = document.createElement('li');
         li.className = 'category-item';
         li.innerHTML = `<span>${catName}</span> <span class="badge">${filteredItems.length}</span>`;
@@ -92,7 +77,6 @@ function render() {
         };
         categoryList.appendChild(li);
 
-        // Build Main Section
         const section = document.createElement('section');
         section.className = 'category-section';
         section.id = 'cat-' + catName;
@@ -113,32 +97,14 @@ function render() {
             const header = document.createElement('div');
             header.className = 'card-header';
             header.title = 'Clic para copiar el nombre de la clase';
-            header.setAttribute('aria-label', `Clase CSS: ${cls}. Clic o Enter para copiar al portapapeles.`);
-            header.tabIndex = 0;
-            header.style.cursor = 'copy';
             header.innerHTML = `<span>.${cls}</span> <div style="display:flex;">${drawSourceBadges(item.sources)}</div>`;
-            
-            const handleCopy = async () => {
-                try {
-                    await navigator.clipboard.writeText(cls);
-                    const span = header.querySelector('span');
-                    const originalText = span.innerText;
-                    span.innerText = '¡Copiado! ✓';
-                    span.style.color = '#28a745';
-                    
-                    setTimeout(() => {
-                        span.innerText = originalText;
-                        span.style.color = '';
-                    }, 1200);
-                } catch (err) {
-                    console.error('No se pudo copiar: ', err);
-                }
+            header.onclick = () => {
+                navigator.clipboard.writeText(cls);
+                const span = header.querySelector('span');
+                const old = span.innerText;
+                span.innerText = '¡Copiado!';
+                setTimeout(() => span.innerText = old, 1000);
             };
-
-            header.addEventListener('click', handleCopy);
-            header.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter') handleCopy();
-            });
             
             const body = document.createElement('div');
             body.className = 'card-body';
@@ -152,18 +118,10 @@ function render() {
         section.appendChild(grid);
         mainContent.appendChild(section);
     }
-    
-    if (totalCards === 0) {
-        mainContent.innerHTML = '<div class="no-results"><h2>No se encontraron resultados combinando esos filtros</h2><p>Intenta marcando otras opciones o cambiando el texto de búsqueda.</p></div>';
-    }
 }
 
-// Initialize
 render();
-
-// Listeners for inputs
 searchInput.addEventListener('input', render);
 sourceCheckboxes.forEach(cb => cb.addEventListener('change', render));
 
-// Verificación de actualizaciones deshabilitada (Se gestiona vía GitHub Actions)
 console.log("Poncho Cheatsheet ARG: Listo.");
