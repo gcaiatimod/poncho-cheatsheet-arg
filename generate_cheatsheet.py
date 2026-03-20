@@ -115,7 +115,7 @@ function generateHTMLForClass(cls, category) {
     if (category === 'Botones') return `<button class="btn ${cls}">Botón ${cls}</button>`;
     if (category === 'Alertas') return `<div class="alert ${cls}" style="width:100%">Alerta: ${cls}</div>`;
     if (category === 'Navegación') {
-        return `<nav class="navbar ${cls}" style="margin:0; width:100%"><div class="container-fluid"><div class="navbar-header"><a class="navbar-brand" href="#">${cls}</a></div></div></nav>`;
+        return `<nav class="navbar ${cls}" style="position: relative !important; top: 0 !important; bottom: 0 !important; z-index: 1; margin:0; width:100%"><div class="container-fluid"><div class="navbar-header"><a class="navbar-brand" href="#">Vista Previa: ${cls}</a></div></div></nav>`;
     }
     if (category === 'Paneles') return `<div class="panel ${cls}" style="width:100%"><div class="panel-heading">Panel</div><div class="panel-body">Cuerpo</div></div>`;
     if (category === 'Insignias/Etiquetas') return `<span class="${cls}">${cls}</span>`;
