@@ -36,7 +36,7 @@ categories = {
     'Tablas': r'^table(-.*)?$',
     'Formularios': r'^(form-.*|input-group|has-.*)$',
     'Insignias/Etiquetas': r'^(badge|label(-.*)?)$',
-    'Márgenes y Padding': r'^(m|p)[xy]?[tb]?[l]?[r]?-?\d+$',
+    'Márgenes y Padding': r'^(m|p)-[atbrlxyad]-?[a-z0-9.]+$',
     'Navegación': r'^(nav(-.*)?|navbar(-.*)?|pagination|breadcrumb)$',
     'Grup. Listas': r'^list-group(-.*)?$',
     'Utilidades': r'^(pull-.*|clearfix|sr-only|hidden-.*|visible-.*|bg-.*)$',
@@ -107,6 +107,41 @@ const categoryList = document.getElementById('categoryList');
 const mainContent = document.getElementById('mainContent');
 const searchInput = document.getElementById('searchInput');
 const sourceCheckboxes = document.querySelectorAll('#sourceFilters input');
+const toast = document.createElement('div');
+toast.className = 'toast-copy';
+document.body.appendChild(toast);
+
+const normalize = (str) => str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase();
+
+function copyToClipboard(e, text) {
+    navigator.clipboard.writeText(text).then(() => {
+        toast.innerText = `¡Copiado!`;
+        toast.style.left = `${e.clientX}px`;
+        toast.style.top = `${e.clientY}px`;
+        toast.classList.add('show', 'success');
+        setTimeout(() => toast.classList.remove('show', 'success'), 1000);
+    });
+}
+
+function showHoverMessage(e, text) {
+    toast.innerText = `Clic para copiar .${text}`;
+    toast.style.left = `${e.clientX}px`;
+    toast.style.top = `${e.clientY}px`;
+    toast.classList.add('show');
+}
+
+function hideHoverMessage() {
+    if (!toast.innerText.includes('¡Copiado!')) {
+        toast.classList.remove('show');
+    }
+}
+
+function moveTooltip(e) {
+    if (toast.classList.contains('show')) {
+        toast.style.left = `${e.clientX}px`;
+        toast.style.top = `${e.clientY}px`;
+    }
+}
 
 function generateHTMLForClass(cls, category) {
     if (category === 'Íconos ARG') {
@@ -131,16 +166,17 @@ function drawSourceBadges(sources) {
 }
 
 function render() {
-    const filter = searchInput.value.toLowerCase();
+    const filter = normalize(searchInput.value);
     const activeSources = Array.from(sourceCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
 
     categoryList.innerHTML = '';
     mainContent.innerHTML = '';
 
     for (const [catName, items] of Object.entries(categorizedData)) {
+        const normalizedCatName = normalize(catName);
         const filtered = items.filter(i => {
             const hasSource = i.sources.some(s => activeSources.includes(s));
-            const hasText = i.name.toLowerCase().includes(filter);
+            const hasText = normalize(i.name).includes(filter) || normalizedCatName.includes(filter);
             return hasSource && hasText;
         });
 
@@ -164,11 +200,15 @@ function render() {
             const card = document.createElement('div');
             card.className = 'component-card';
             card.innerHTML = `
-                <div class="card-header" onclick="navigator.clipboard.writeText('${item.name}')">
+                <div class="card-header" 
+                    onclick="copyToClipboard(event, '${item.name}')"
+                    onmouseenter="showHoverMessage(event, '${item.name}')"
+                    onmousemove="moveTooltip(event)"
+                    onmouseleave="hideHoverMessage()">
                     <span>.${item.name}</span>
                     <div style="display:flex">${drawSourceBadges(item.sources)}</div>
                 </div>
-                <div class="card-body" style="padding:${catName === 'Navegación' ? '0' : '15px'}">${generateHTMLForClass(item.name, catName)}</div>
+                <div class="card-body" style="padding:${catName === 'Navegación' ? '0' : '30px 20px'}">${generateHTMLForClass(item.name, catName)}</div>
             `;
             grid.appendChild(card);
         });
@@ -187,31 +227,31 @@ body { font-family: 'Encode Sans', sans-serif, Arial; background: #f0f3f6; margi
 .cheatsheet-container { display: flex; height: 100vh; overflow:hidden; }
 
 /* Sidebar Premium */
-.sidebar { width: 330px; background: #fff; border-right:1px solid #d1d9e6; display:flex; flex-direction:column; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
+.sidebar { width: 340px; background: #fff; border-right:1px solid #d1d9e6; display:flex; flex-direction:column; box-shadow: 2px 0 10px rgba(0,0,0,0.05); }
 .sidebar-header { padding: 25px; background: linear-gradient(135deg, #0072bb 0%, #005a96 100%); color: white; }
 .sidebar-header h2 { margin: 0; font-size: 1.3rem; }
 
-.filters-container { padding: 15px; background: #fbfcfe; border-bottom: 1px solid #d1d9e6; }
-.source-filters { display:flex; gap:8px; margin-bottom:12px; flex-wrap:wrap; }
-.source-filters label { background: white; border: 1px solid #ced4da; padding: 5px 10px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: 0.2s; }
+.filters-container { padding: 15px 12px; background: #fbfcfe; border-bottom: 1px solid #d1d9e6; }
+.source-filters { display:flex; gap:6px; margin-bottom:15px; flex-wrap:nowrap; align-items: center; }
+.source-filters label { background: white; border: 1px solid #d1d9e6; padding: 5px 10px; border-radius: 20px; font-size: 0.82rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 4px; font-weight: bold; color: #4b6175; white-space: nowrap; flex-shrink: 0; }
 .source-filters label:hover { border-color: #0072bb; background: #f0f8ff; }
-.search-box { width: 100%; padding: 10px; border-radius: 6px; border: 1px solid #ced4da; }
+.search-box { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #d1d9e6; font-size: 0.95rem; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02); }
 
 .category-list { overflow-y: auto; flex: 1; padding: 0; list-style: none; }
-.category-item { padding: 12px 25px; border-bottom: 1px solid #edf1f7; cursor: pointer; display: flex; justify-content: space-between; transition: 0.2s; }
+.category-item { padding: 12px 25px; border-bottom: 1px solid #edf1f7; cursor: pointer; display: flex; justify-content: space-between; transition: 0.2s; font-size: 0.95rem; }
 .category-item:hover { background: #f4f8fb; padding-left: 30px; }
-.category-item .badge { background: #e9ecef; color: #495057; border-radius: 12px; }
+.category-item .badge { background: #e9ecef; color: #495057; border-radius: 12px; font-size: 0.8rem; }
 
 /* Content */
 .main-content { flex: 1; overflow-y: auto; padding: 40px; scroll-behavior: smooth; }
-.category-title { color: #333; border-bottom: 2px solid #0072bb; padding-bottom: 5px; margin-bottom: 25px; }
+.category-title { color: #333; border-bottom: 2px solid #0072bb; padding-bottom: 5px; margin-bottom: 25px; font-size: 1.5rem; }
 
-.component-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; }
+.component-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 24px; }
 .component-card { background: white; border-radius: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.04); border: 1px solid #d1d9e6; overflow: hidden; transition: 0.3s; }
 .component-card:hover { transform: translateY(-3px); box-shadow: 0 8px 20px rgba(0,0,0,0.08); }
 
-.card-header { padding: 10px 15px; background: #f8fafc; border-bottom: 1px solid #edf1f7; display: flex; justify-content: space-between; align-items: center; cursor: copy; font-family: monospace; color: #d63384; font-weight: bold; }
-.card-body { padding: 15px; display: flex; justify-content: center; align-items: center; min-height: 110px; }
+.card-header { padding: 12px 20px; background: #f8fafc; border-bottom: 1px solid #edf1f7; display: flex; justify-content: space-between; align-items: center; cursor: copy; font-family: monospace; color: #d63384; font-weight: bold; font-size: 1.1rem; }
+.card-body { padding: 30px 20px; display: flex; justify-content: center; align-items: center; min-height: 120px; }
 
 .source-badge { font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; color: white; margin-left: 4px; font-family: sans-serif; text-transform: uppercase; }
 .source-bootstrap { background: #6f42c1; }
@@ -219,6 +259,29 @@ body { font-family: 'Encode Sans', sans-serif, Arial; background: #f0f3f6; margi
 .source-íconos { background: #28a745; }
 
 .update-badge { font-size: 0.8rem; margin-top: 5px; background: rgba(255,255,255,0.15); padding: 5px 10px; border-radius: 6px; display: inline-block; }
+
+/* Toast copy (Tooltip following mouse) */
+.toast-copy {
+    position: fixed;
+    background: #333;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    z-index: 9999;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    white-space: nowrap;
+    transform: translate(-50%, -100%);
+    margin-top: -10px;
+}
+.toast-copy.show {
+    opacity: 1;
+}
+.toast-copy.success {
+    background: #28a745;
+}
 """
 
 # Generar archivos

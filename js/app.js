@@ -3,6 +3,41 @@ const categoryList = document.getElementById('categoryList');
 const mainContent = document.getElementById('mainContent');
 const searchInput = document.getElementById('searchInput');
 const sourceCheckboxes = document.querySelectorAll('#sourceFilters input');
+const toast = document.createElement('div');
+toast.className = 'toast-copy';
+document.body.appendChild(toast);
+
+const normalize = (str) => str.normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase();
+
+function copyToClipboard(e, text) {
+    navigator.clipboard.writeText(text).then(() => {
+        toast.innerText = `¡Copiado!`;
+        toast.style.left = `${e.clientX}px`;
+        toast.style.top = `${e.clientY}px`;
+        toast.classList.add('show', 'success');
+        setTimeout(() => toast.classList.remove('show', 'success'), 1000);
+    });
+}
+
+function showHoverMessage(e, text) {
+    toast.innerText = `Clic para copiar .${text}`;
+    toast.style.left = `${e.clientX}px`;
+    toast.style.top = `${e.clientY}px`;
+    toast.classList.add('show');
+}
+
+function hideHoverMessage() {
+    if (!toast.innerText.includes('¡Copiado!')) {
+        toast.classList.remove('show');
+    }
+}
+
+function moveTooltip(e) {
+    if (toast.classList.contains('show')) {
+        toast.style.left = `${e.clientX}px`;
+        toast.style.top = `${e.clientY}px`;
+    }
+}
 
 function generateHTMLForClass(cls, category) {
     if (category === 'Íconos ARG') {
@@ -27,16 +62,17 @@ function drawSourceBadges(sources) {
 }
 
 function render() {
-    const filter = searchInput.value.toLowerCase();
+    const filter = normalize(searchInput.value);
     const activeSources = Array.from(sourceCheckboxes).filter(cb => cb.checked).map(cb => cb.value);
 
     categoryList.innerHTML = '';
     mainContent.innerHTML = '';
 
     for (const [catName, items] of Object.entries(categorizedData)) {
+        const normalizedCatName = normalize(catName);
         const filtered = items.filter(i => {
             const hasSource = i.sources.some(s => activeSources.includes(s));
-            const hasText = i.name.toLowerCase().includes(filter);
+            const hasText = normalize(i.name).includes(filter) || normalizedCatName.includes(filter);
             return hasSource && hasText;
         });
 
@@ -60,11 +96,15 @@ function render() {
             const card = document.createElement('div');
             card.className = 'component-card';
             card.innerHTML = `
-                <div class="card-header" onclick="navigator.clipboard.writeText('${item.name}')">
+                <div class="card-header" 
+                    onclick="copyToClipboard(event, '${item.name}')"
+                    onmouseenter="showHoverMessage(event, '${item.name}')"
+                    onmousemove="moveTooltip(event)"
+                    onmouseleave="hideHoverMessage()">
                     <span>.${item.name}</span>
                     <div style="display:flex">${drawSourceBadges(item.sources)}</div>
                 </div>
-                <div class="card-body" style="padding:${catName === 'Navegación' ? '0' : '15px'}">${generateHTMLForClass(item.name, catName)}</div>
+                <div class="card-body" style="padding:${catName === 'Navegación' ? '0' : '30px 20px'}">${generateHTMLForClass(item.name, catName)}</div>
             `;
             grid.appendChild(card);
         });
