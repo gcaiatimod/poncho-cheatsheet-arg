@@ -4,11 +4,24 @@ import os
 import time
 from datetime import datetime
 
-def parse_css(path):
-    if not os.path.exists(path):
+import urllib.request
+
+def parse_css(source):
+    content = ""
+    try:
+        if source.startswith('http'):
+            req = urllib.request.Request(source, headers={'User-Agent': 'Mozilla/5.0'})
+            with urllib.request.urlopen(req) as response:
+                content = response.read().decode('utf-8', errors='ignore')
+        else:
+            if not os.path.exists(source):
+                print(f"File not found: {source}")
+                return set()
+            with open(source, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read()
+    except Exception as e:
+        print(f"Error loading {source}: {e}")
         return set()
-    with open(path, 'r', encoding='utf-8', errors='ignore') as f:
-        content = f.read()
     
     # Limpiar comentarios
     content = re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
@@ -20,10 +33,10 @@ def parse_css(path):
     
     return classes
 
-# Carga de archivos locales (Asegúrate de que existan en la carpeta css/)
-bs_classes = parse_css('css/bootstrap.min.css')
-poncho_classes = parse_css('css/poncho.min.css')
-icono_classes = parse_css('css/icono-arg.css')
+# Carga de archivos desde URLs absolutas para actualizar las clases
+bs_classes = parse_css('https://www.argentina.gob.ar/profiles/argentinagobar/themes/contrib/poncho/vendor/bootstrap/css/bootstrap.min.css')
+poncho_classes = parse_css('https://www.argentina.gob.ar/profiles/argentinagobar/themes/contrib/poncho/css/poncho.min.css')
+icono_classes = parse_css('https://www.argentina.gob.ar/profiles/argentinagobar/themes/contrib/poncho/css/icono-arg.css')
 
 # Unión de todas las clases encontradas
 all_classes = bs_classes.union(poncho_classes).union(icono_classes)
