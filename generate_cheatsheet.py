@@ -33,10 +33,10 @@ def parse_css(source):
     
     return classes
 
-# Carga de archivos desde URLs absolutas para actualizar las clases
+# Carga de archivos desde URLs para actualizar las clases
 bs_classes = parse_css('https://www.argentina.gob.ar/profiles/argentinagobar/themes/contrib/poncho/vendor/bootstrap/css/bootstrap.min.css')
-poncho_classes = parse_css('https://www.argentina.gob.ar/profiles/argentinagobar/themes/contrib/poncho/css/poncho.min.css')
-icono_classes = parse_css('https://www.argentina.gob.ar/profiles/argentinagobar/themes/contrib/poncho/css/icono-arg.css')
+poncho_classes = parse_css('https://cdn.jsdelivr.net/gh/argob/poncho@release-1.x/dist/css/poncho.min.css')
+icono_classes = parse_css('https://cdn.jsdelivr.net/gh/argob/poncho@release-1.x/dist/css/icono-arg.css')
 
 # Unión de todas las clases encontradas
 all_classes = bs_classes.union(poncho_classes).union(icono_classes)
