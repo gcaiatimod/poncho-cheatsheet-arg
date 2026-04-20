@@ -20,20 +20,17 @@ El proyecto funciona en entornos estáticos como **Cloudflare Pages** o **GitHub
 
 ## 🔄 Cómo Actualizar (Sincronización Automática)
 
-El proceso de extracción de clases ahora es **completamente automático**. Ya no necesitas descargar archivos para tener tu buscador al día. La herramienta se conecta y se sincroniza directamente con los repositorios web del Estado.
+Para sincronizar las clases, descargar los últimos archivos CSS y subir los cambios a GitHub de un solo golpe, ejecuta:
 
-Para lanzar la actualización automática de la base de datos:
+```bash
+curl -L -o css/poncho.min.css https://cdn.jsdelivr.net/gh/argob/poncho@release-1.x/dist/css/poncho.min.css && curl -L -o css/icono-arg.css https://cdn.jsdelivr.net/gh/argob/poncho@release-1.x/dist/css/icono-arg.css && python3 generate_cheatsheet.py && git add . && git commit -m "Sincronización automática de clases" && git push origin main
+```
 
-1. Ejecuta el archivo generador. Este comando descargará de Internet los últimos archivos `.css` de Poncho y Bootstrap 3, extraerá las clases y regenerará la base interna `js/data.js` al instante.
-   ```bash
-   python3 generate_cheatsheet.py
-   ```
-2. *(Opcional)* El frontend de la página web (la gráfica que tú ves) sí seguirá usando los archivos seguros y controlados de tu carpeta `/css`. Solo si ocurre un cambio de diseño gigante de parte de Presidencia que necesites ver en tu preview local, puedes optar por bajarlos físicamente a la carpeta `css/`.
-3. Sube la actualización automática de las clases a tu repositorio:
-   ```bash
-   git add .
-   git commit -m "Sincronización automática de clases desde fuente oficial"
-   git push origin main
-   ```
+Este comando:
+1. Actualiza tus archivos locales en `/css` desde el repositorio oficial de Poncho (v1.x).
+2. Extrae las nuevas clases (incluyendo iconos nuevos como **tableau**).
+3. Regenera el buscador `index.html` y la base de datos `js/data.js`.
+4. Sube todo a tu repositorio remoto.
+
 
 *Nota:* Se recomienda conexión a internet para cargar las tipografías oficiales de Google Fonts.
