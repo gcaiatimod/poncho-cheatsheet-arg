@@ -11,8 +11,8 @@ header('Content-Type: application/json');
 
 $urls = [
     '../css/bootstrap.min.css' => 'https://www.argentina.gob.ar/profiles/argentinagobar/themes/contrib/poncho/vendor/bootstrap/css/bootstrap.min.css',
-    '../css/icono-arg.css' => 'https://www.argentina.gob.ar/profiles/argentinagobar/themes/contrib/poncho/css/icono-arg.css',
-    '../css/poncho.min.css' => 'https://www.argentina.gob.ar/profiles/argentinagobar/themes/contrib/poncho/css/poncho.min.css'
+    '../css/icono-arg.css' => 'https://cdn.jsdelivr.net/gh/argob/poncho@release-1.x/dist/css/icono-arg.css',
+    '../css/poncho.min.css' => 'https://cdn.jsdelivr.net/gh/argob/poncho@release-1.x/dist/css/poncho.min.css'
 ];
 
 $up_to_date = true;
