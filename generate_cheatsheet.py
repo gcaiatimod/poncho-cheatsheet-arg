@@ -26,20 +26,22 @@ def parse_css(source):
     # Limpiar comentarios
     content = re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
     
-    # Buscar clases (.clase)
-    classes = set()
-    for match in re.finditer(r'\.([a-zA-Z0-9_-]+)', content):
-        classes.add(match.group(1))
+    # Eliminar contenido dentro de llaves para no matchear valores de propiedades
+    content = re.sub(r'\{[^}]*\}', '', content)
+    
+    # Buscar clases (.clase) - findall es mas rapido que finditer
+    classes = set(re.findall(r'\.([a-zA-Z0-9_-]+)', content))
     
     return classes
 
-# Carga de archivos desde URLs para actualizar las clases
-bs_classes = parse_css('https://www.argentina.gob.ar/profiles/argentinagobar/themes/contrib/poncho/vendor/bootstrap/css/bootstrap.min.css')
-poncho_classes = parse_css('https://cdn.jsdelivr.net/gh/argob/poncho@release-1.x/dist/css/poncho.min.css')
-icono_classes = parse_css('https://cdn.jsdelivr.net/gh/argob/poncho@release-1.x/dist/css/icono-arg.css')
+# Carga de archivos locales para actualizar las clases
+bs_classes = parse_css('css/bootstrap.min.css')
+poncho_classes = parse_css('css/poncho.min.css')
+icono_classes = parse_css('css/icono-arg.css')
+fa_classes = parse_css('css/font-awesome.css')
 
 # Unión de todas las clases encontradas
-all_classes = bs_classes.union(poncho_classes).union(icono_classes)
+all_classes = bs_classes.union(poncho_classes).union(icono_classes).union(fa_classes)
 
 categories = {
     'Botones': r'^btn(-.*)?$',
@@ -55,6 +57,7 @@ categories = {
     'Utilidades': r'^(pull-.*|clearfix|sr-only|hidden-.*|visible-.*|bg-.*)$',
     'Grid': r'^(col-.*|row|container(-fluid)?)$',
     'Íconos ARG': r'^icono-arg-.*$',
+    'Iconos FA': r'^fa-[a-z0-9-]+$',
     'Poncho Específicos': r'^(p-.*|border-.*|rounded-.*|shadow-.*|w-\d+|h-\d+|d-.*|align-.*|justify-.*)$'
 }
 
@@ -65,10 +68,13 @@ for cls in all_classes:
     if cls in bs_classes: sources.append('Bootstrap')
     if cls in poncho_classes: sources.append('Poncho')
     if cls in icono_classes: sources.append('Íconos')
+    if cls in fa_classes: sources.append('FA 4.7')
     
     for cat, regex in categories.items():
         if re.match(regex, cls):
-            categorized[cat].append({"name": cls, "sources": sources})
+            # Iconos FA siempre muestran solo 'FA 4.7' como fuente
+            effective_sources = ['FA 4.7'] if cat == 'Iconos FA' else sources
+            categorized[cat].append({"name": cls, "sources": effective_sources})
             break
 
 html_template = """<!DOCTYPE html>
@@ -79,27 +85,28 @@ html_template = """<!DOCTYPE html>
     <title>Poncho Cheatsheet ARG - Local Premium</title>
     <!-- CSS Locales -->
     <link rel="stylesheet" href="css/bootstrap.min.css">
-    <link rel="stylesheet" href="css/icono-arg.css">
     <link rel="stylesheet" href="css/poncho.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <!-- Iconos UI -->
+    <link rel="stylesheet" href="css/icono-arg.css">
+    <!-- Iconos UI: FA carga último para que sus glyphs no sean pisados -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="cheatsheet-container">
         <aside class="sidebar">
             <div class="sidebar-header">
                 <h2>Poncho Cheatsheet ARG</h2>
-                <small>Poncho + Bootstrap 3</small>
+                <small>Poncho + B3.3.7</small>
                 <div class="update-badge" id="updateBadge">
                     <i class="fa fa-calendar"></i> Generado el: {TIMESTAMP_PLACEHOLDER}
                 </div>
             </div>
             <div class="filters-container">
                 <div class="source-filters" id="sourceFilters">
-                    <label><input type="checkbox" value="Bootstrap" checked> BS3</label>
+                    <label><input type="checkbox" value="Bootstrap" checked> B3.3.7</label>
                     <label><input type="checkbox" value="Poncho" checked> Poncho</label>
-                    <label><input type="checkbox" value="Íconos" checked> Íconos</label>
+                    <label><input type="checkbox" value="Íconos" checked> Íconos ARG</label>
+                    <label><input type="checkbox" value="FA 4.7" checked> FA 4.7</label>
                 </div>
                 <input type="text" id="searchInput" class="search-box" placeholder="Buscar clase o componentes...">
             </div>
@@ -160,6 +167,9 @@ function generateHTMLForClass(cls, category) {
     if (category === 'Íconos ARG') {
         return `<div class="p-2 text-center"><i class="${cls}" style="font-size: 2.5rem; color:#0072bb"></i><br><br><small>.${cls}</small></div>`;
     }
+    if (category === 'Iconos FA') {
+        return `<div class="p-2 text-center"><i class="fa ${cls}" style="font-size: 2.5rem; color:#333"></i><br><br><small>.${cls}</small></div>`;
+    }
     if (category === 'Botones') return `<button class="btn ${cls}">Botón ${cls}</button>`;
     if (category === 'Alertas') return `<div class="alert ${cls}" style="width:100%">Alerta: ${cls}</div>`;
     if (category === 'Formularios') {
@@ -175,7 +185,10 @@ function generateHTMLForClass(cls, category) {
 }
 
 function drawSourceBadges(sources) {
-    return sources.map(s => `<span class="source-badge source-${s.toLowerCase()}">${s}</span>`).join('');
+    return sources.map(s => {
+        const clsName = s.toLowerCase().replace(/[^a-z0-9]/g, '-');
+        return `<span class="source-badge source-${clsName}">${s}</span>`;
+    }).join('');
 }
 
 function render() {
@@ -190,6 +203,7 @@ function render() {
         const filtered = items.filter(i => {
             const hasSource = i.sources.some(s => activeSources.includes(s));
             const hasText = normalize(i.name).includes(filter) || normalizedCatName.includes(filter);
+            
             return hasSource && hasText;
         });
 
@@ -245,7 +259,7 @@ body { font-family: 'Encode Sans', sans-serif, Arial; background: #f0f3f6; margi
 .sidebar-header h2 { margin: 0; font-size: 1.3rem; }
 
 .filters-container { padding: 15px 12px; background: #fbfcfe; border-bottom: 1px solid #d1d9e6; }
-.source-filters { display:flex; gap:6px; margin-bottom:15px; flex-wrap:nowrap; align-items: center; }
+.source-filters { display:flex; gap:6px; margin-bottom:15px; flex-wrap:wrap; align-items: center; }
 .source-filters label { background: white; border: 1px solid #d1d9e6; padding: 5px 10px; border-radius: 20px; font-size: 0.82rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 4px; font-weight: bold; color: #4b6175; white-space: nowrap; flex-shrink: 0; }
 .source-filters label:hover { border-color: #0072bb; background: #f0f8ff; }
 .search-box { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #d1d9e6; font-size: 0.95rem; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02); }
@@ -269,7 +283,8 @@ body { font-family: 'Encode Sans', sans-serif, Arial; background: #f0f3f6; margi
 .source-badge { font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; color: white; margin-left: 4px; font-family: sans-serif; text-transform: uppercase; }
 .source-bootstrap { background: #6f42c1; }
 .source-poncho { background: #0072bb; }
-.source-íconos { background: #28a745; }
+.source-iconos { background: #28a745; }
+.source-fa-4-7 { background: #333; }
 
 .update-badge { font-size: 0.8rem; margin-top: 5px; background: rgba(255,255,255,0.15); padding: 5px 10px; border-radius: 6px; display: inline-block; }
 

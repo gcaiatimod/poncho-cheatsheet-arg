@@ -43,6 +43,9 @@ function generateHTMLForClass(cls, category) {
     if (category === 'Íconos ARG') {
         return `<div class="p-2 text-center"><i class="${cls}" style="font-size: 2.5rem; color:#0072bb"></i><br><br><small>.${cls}</small></div>`;
     }
+    if (category === 'Iconos FA') {
+        return `<div class="p-2 text-center"><i class="fa ${cls}" style="font-size: 2.5rem; color:#333"></i><br><br><small>.${cls}</small></div>`;
+    }
     if (category === 'Botones') return `<button class="btn ${cls}">Botón ${cls}</button>`;
     if (category === 'Alertas') return `<div class="alert ${cls}" style="width:100%">Alerta: ${cls}</div>`;
     if (category === 'Formularios') {
@@ -58,7 +61,10 @@ function generateHTMLForClass(cls, category) {
 }
 
 function drawSourceBadges(sources) {
-    return sources.map(s => `<span class="source-badge source-${s.toLowerCase()}">${s}</span>`).join('');
+    return sources.map(s => {
+        const clsName = s.toLowerCase().replace(/[^a-z0-9]/g, '-');
+        return `<span class="source-badge source-${clsName}">${s}</span>`;
+    }).join('');
 }
 
 function render() {
@@ -73,6 +79,7 @@ function render() {
         const filtered = items.filter(i => {
             const hasSource = i.sources.some(s => activeSources.includes(s));
             const hasText = normalize(i.name).includes(filter) || normalizedCatName.includes(filter);
+            
             return hasSource && hasText;
         });
 
