@@ -272,7 +272,7 @@ body { font-family: 'Encode Sans', sans-serif, Arial; background: #f0f3f6; margi
 .source-filters { display:flex; flex-direction:column; gap:15px; margin-bottom:20px; }
 .filter-section { display: flex; flex-direction: column; gap: 10px; padding-bottom: 15px; border-bottom: 1px solid #edf1f7; }
 .filter-section:last-child { border-bottom: none; padding-bottom: 0; }
-.section-title { font-size: 0.95rem; font-weight: 700; color: #000000; margin: 0; text-align: left; }
+.section-title { font-size: 0.85rem; font-weight: 600; color: #5a6a7c; margin: 0 0 2px 0; text-align: left; text-transform: capitalize; }
 .filter-pills { display:flex; gap:8px; flex-wrap:wrap; align-items: center; }
 .source-filters label { background: white; border: 1px solid #d1d9e6; padding: 5px 12px; border-radius: 20px; font-size: 0.82rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; color: #333; white-space: nowrap; flex-shrink: 0; }
 .source-filters label:hover { border-color: #0072bb; background: #f0f8ff; }
