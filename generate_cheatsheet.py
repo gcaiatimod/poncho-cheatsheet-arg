@@ -68,12 +68,12 @@ for cls in all_classes:
     if cls in bs_classes: sources.append('Bootstrap')
     if cls in poncho_classes: sources.append('Poncho')
     if cls in icono_classes: sources.append('Íconos')
-    if cls in fa_classes: sources.append('FA 4.7')
+    if cls in fa_classes: sources.append('FA4.7')
     
     for cat, regex in categories.items():
         if re.match(regex, cls):
-            # Iconos FA siempre muestran solo 'FA 4.7' como fuente
-            effective_sources = ['FA 4.7'] if cat == 'Iconos FA' else sources
+            # Iconos FA siempre muestran solo 'FA4.7' como fuente
+            effective_sources = ['FA4.7'] if cat == 'Iconos FA' else sources
             categorized[cat].append({"name": cls, "sources": effective_sources})
             break
 
@@ -106,7 +106,7 @@ html_template = """<!DOCTYPE html>
                     <label><input type="checkbox" value="Bootstrap" checked> B3.3.7</label>
                     <label><input type="checkbox" value="Poncho" checked> Poncho</label>
                     <label><input type="checkbox" value="Íconos" checked> Íconos ARG</label>
-                    <label><input type="checkbox" value="FA 4.7" checked> FA 4.7</label>
+                    <label><input type="checkbox" value="FA4.7" checked> FA4.7</label>
                 </div>
                 <input type="text" id="searchInput" class="search-box" placeholder="Buscar clase o componentes...">
             </div>
