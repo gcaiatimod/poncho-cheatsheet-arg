@@ -103,10 +103,16 @@ html_template = """<!DOCTYPE html>
             </div>
             <div class="filters-container">
                 <div class="source-filters" id="sourceFilters">
-                    <label><input type="checkbox" value="Bootstrap" checked> B3.3.7</label>
-                    <label><input type="checkbox" value="Poncho" checked> Poncho</label>
-                    <label><input type="checkbox" value="Íconos" checked> Íconos ARG</label>
-                    <label><input type="checkbox" value="FA4.7" checked> FA4.7</label>
+                    <div class="filter-group">
+                        <span class="group-title">Layout:</span>
+                        <label><input type="checkbox" value="Bootstrap" checked> B3.3.7</label>
+                        <label><input type="checkbox" value="Poncho" checked> Poncho</label>
+                    </div>
+                    <div class="filter-group">
+                        <span class="group-title">Íconos:</span>
+                        <label><input type="checkbox" value="Íconos" checked> Íconos ARG</label>
+                        <label><input type="checkbox" value="FA4.7" checked> FA4.7</label>
+                    </div>
                 </div>
                 <input type="text" id="searchInput" class="search-box" placeholder="Buscar clase o componentes...">
             </div>
@@ -258,8 +264,10 @@ body { font-family: 'Encode Sans', sans-serif, Arial; background: #f0f3f6; margi
 .sidebar-header { padding: 25px; background: linear-gradient(135deg, #0072bb 0%, #005a96 100%); color: white; }
 .sidebar-header h2 { margin: 0; font-size: 1.3rem; }
 
-.filters-container { padding: 15px 12px; background: #fbfcfe; border-bottom: 1px solid #d1d9e6; }
-.source-filters { display:flex; gap:6px; margin-bottom:15px; flex-wrap:wrap; align-items: center; }
+.filters-container { padding: 25px 20px; background: #ffffff; border-bottom: 1px solid #edf1f7; }
+.source-filters { display:flex; flex-direction:column; gap:15px; margin-bottom:20px; }
+.filter-group { display:flex; gap:8px; flex-wrap:wrap; align-items: center; }
+.group-title { font-size: 0.8rem; font-weight: 700; color: #4b6a8e; text-transform: uppercase; width: 65px; text-align: right; margin-right: 5px; letter-spacing: 0.5px; }
 .source-filters label { background: white; border: 1px solid #d1d9e6; padding: 5px 10px; border-radius: 20px; font-size: 0.82rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 4px; font-weight: bold; color: #4b6175; white-space: nowrap; flex-shrink: 0; }
 .source-filters label:hover { border-color: #0072bb; background: #f0f8ff; }
 .search-box { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #d1d9e6; font-size: 0.95rem; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02); }
