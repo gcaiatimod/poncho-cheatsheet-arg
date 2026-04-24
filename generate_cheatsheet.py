@@ -104,14 +104,14 @@ html_template = """<!DOCTYPE html>
             <div class="filters-container">
                 <div class="source-filters" id="sourceFilters">
                     <div class="filter-section">
-                        <h4 class="section-title">Layout</h4>
+                        <div class="section-title">Layout</div>
                         <div class="filter-pills">
                             <label><input type="checkbox" value="Bootstrap" checked> B3.3.7</label>
                             <label><input type="checkbox" value="Poncho" checked> Poncho</label>
                         </div>
                     </div>
                     <div class="filter-section">
-                        <h4 class="section-title">Íconos</h4>
+                        <div class="section-title">Íconos</div>
                         <div class="filter-pills">
                             <label><input type="checkbox" value="Íconos" checked> Íconos ARG</label>
                             <label><input type="checkbox" value="FA4.7" checked> FA4.7</label>
@@ -270,9 +270,8 @@ body { font-family: 'Encode Sans', sans-serif, Arial; background: #f0f3f6; margi
 
 .filters-container { padding: 25px 20px; background: #ffffff; border-bottom: 1px solid #edf1f7; }
 .source-filters { display:flex; flex-direction:column; gap:15px; margin-bottom:20px; }
-.filter-section { display: flex; flex-direction: column; gap: 10px; padding-bottom: 15px; border-bottom: 1px solid #edf1f7; }
-.filter-section:last-child { border-bottom: none; padding-bottom: 0; }
-.section-title { font-size: 0.85rem; font-weight: 600; color: #5a6a7c; margin: 0 0 2px 0; text-align: left; text-transform: capitalize; }
+.filter-section { display: flex; flex-direction: column; gap: 12px; margin-bottom: 10px; }
+.section-title { font-size: 0.8rem; font-weight: 600; color: #7f8c8d; margin: 0; padding-bottom: 8px; border-bottom: 1px solid #e2e8f0; text-transform: uppercase; letter-spacing: 0.5px; }
 .filter-pills { display:flex; gap:8px; flex-wrap:wrap; align-items: center; }
 .source-filters label { background: white; border: 1px solid #d1d9e6; padding: 5px 12px; border-radius: 20px; font-size: 0.82rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; gap: 6px; color: #333; white-space: nowrap; flex-shrink: 0; }
 .source-filters label:hover { border-color: #0072bb; background: #f0f8ff; }
